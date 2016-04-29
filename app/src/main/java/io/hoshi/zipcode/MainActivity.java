@@ -60,14 +60,7 @@ public class MainActivity extends AppCompatActivity implements EditTextDialog.On
         call.enqueue(new Callback<ZipCodeResult>() {
             @Override
             public void onResponse(Call<ZipCodeResult> call, Response<ZipCodeResult> response) {
-                ZipCodeResult result = response.body();
-                textView.append("\n\nresult.resultInfo.count = " + result.resultInfo.count);
-                if (result.feature != null) {
-                    for (int i = 0; i < result.feature.length; i++) {
-                        textView.append("\nresult.feature[" + i + "].property.address = " + result.feature[i].property.address);
-                        textView.append("\nresult.feature[" + i + "].geometry.coordinates = " + result.feature[i].geometry.coordinates);
-                    }
-                }
+                textView.append("\n\n" + response.body());
             }
 
             @Override

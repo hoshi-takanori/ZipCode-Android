@@ -34,4 +34,35 @@ public class ZipCodeResult {
         @SerializedName("Property")
         public Property property;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        if (resultInfo != null) {
+            builder.append("resultInfo.count = " + resultInfo.count);
+        } else {
+            builder.append("resultInfo = null");
+        }
+
+        if (feature != null) {
+            for (int i = 0; i < feature.length; i++) {
+                if (feature[i].property != null) {
+                    builder.append("\nfeature[" + i + "].property.address = " + feature[i].property.address);
+                } else {
+                    builder.append("\nfeature[" + i + "].property = null");
+                }
+
+                if (feature[i].geometry != null) {
+                    builder.append("\nfeature[" + i + "].geometry.coordinates = " + feature[i].geometry.coordinates);
+                } else {
+                    builder.append("\nfeature[" + i + "].geometry = null");
+                }
+            }
+        } else {
+            builder.append("\nfeature = null");
+        }
+
+        return builder.toString();
+    }
 }
