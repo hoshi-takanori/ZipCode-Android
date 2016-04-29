@@ -10,7 +10,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements EditTextDialog.OnDismissListener {
 
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements EditTextDialog.On
         api = new Retrofit.Builder()
                 .baseUrl(ZipCodeAPI.API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
                 .create(ZipCodeAPI.class);
 
@@ -86,5 +92,26 @@ public class MainActivity extends AppCompatActivity implements EditTextDialog.On
 
     private void queryReactive(String zipCode) {
         textView.setText("reactive zipCode = " + zipCode);
+
+        Observable<ZipCodeResult> observable = api.zipCodeSearchRx(zipCode, ZipCodeAPI.OUTPUT_JSON, ZipCodeAPI.API_KEY);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(Schedulers.io())
+                .subscribe(new Observer<ZipCodeResult>() {
+                    @Override
+                    public void onNext(ZipCodeResult zipCodeResult) {
+                        textView.append("\n\n" + zipCodeResult);
+                    }
+
+                    @Override
+                    public void onError(Throwable error) {
+                        textView.append("\n\n" + error);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        textView.append("\n\ndone");
+                    }
+                });
     }
 }

@@ -3,6 +3,7 @@ package io.hoshi.zipcode;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import rx.Observable;
 
 /**
  * Created by hoshi on 2016/04/28.
@@ -14,4 +15,7 @@ public interface ZipCodeAPI {
 
     @GET("/OpenLocalPlatform/V1/zipCodeSearch")
     Call<ZipCodeResult> zipCodeSearch(@Query("query") String query, @Query("output") String output, @Query("appid") String appid);
+
+    @GET("/OpenLocalPlatform/V1/zipCodeSearch")
+    Observable<ZipCodeResult> zipCodeSearchRx(@Query("query") String query, @Query("output") String output, @Query("appid") String appid);
 }
