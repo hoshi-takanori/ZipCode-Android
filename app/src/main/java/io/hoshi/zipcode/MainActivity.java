@@ -1,5 +1,6 @@
 package io.hoshi.zipcode;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -11,7 +12,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EditTextDialog.OnDismissListener {
 
     private View startButton;
     private TextView textView;
@@ -35,9 +36,21 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                query("100-0001");
+                askZipCode();
             }
         });
+    }
+
+    private void askZipCode() {
+        EditTextDialog dialog = new EditTextDialog();
+        dialog.show(getSupportFragmentManager(), "dialog");
+    }
+
+    @Override
+    public void onDismiss(int which, String text) {
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            query(text);
+        }
     }
 
     private void query(String zipCode) {
@@ -49,9 +62,11 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<ZipCodeResult> call, Response<ZipCodeResult> response) {
                 ZipCodeResult result = response.body();
                 textView.append("\n\nresult.resultInfo.count = " + result.resultInfo.count);
-                for (int i = 0; i < result.feature.length; i++) {
-                    textView.append("\nresult.feature[" + i + "].property.address = " + result.feature[i].property.address);
-                    textView.append("\nresult.feature[" + i + "].geometry.coordinates = " + result.feature[i].geometry.coordinates);
+                if (result.feature != null) {
+                    for (int i = 0; i < result.feature.length; i++) {
+                        textView.append("\nresult.feature[" + i + "].property.address = " + result.feature[i].property.address);
+                        textView.append("\nresult.feature[" + i + "].geometry.coordinates = " + result.feature[i].geometry.coordinates);
+                    }
                 }
             }
 
