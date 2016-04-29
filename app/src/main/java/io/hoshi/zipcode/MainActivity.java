@@ -14,7 +14,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements EditTextDialog.OnDismissListener {
 
+    private static int DIALOG_START = 1;
+    private static int DIALOG_REACTIVE = 2;
+
     private View startButton;
+    private View reactiveButton;
     private TextView textView;
 
     private ZipCodeAPI api;
@@ -25,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements EditTextDialog.On
         setContentView(R.layout.activity_main);
 
         startButton = findViewById(R.id.start);
+        reactiveButton = findViewById(R.id.reactive);
         textView = (TextView) findViewById(R.id.textview);
 
         api = new Retrofit.Builder()
@@ -36,20 +41,29 @@ public class MainActivity extends AppCompatActivity implements EditTextDialog.On
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                askZipCode();
+                askZipCode(DIALOG_START);
+            }
+        });
+
+        reactiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                askZipCode(DIALOG_REACTIVE);
             }
         });
     }
 
-    private void askZipCode() {
-        EditTextDialog dialog = new EditTextDialog();
+    private void askZipCode(int dialogCode) {
+        EditTextDialog dialog = EditTextDialog.newInstance(dialogCode);
         dialog.show(getSupportFragmentManager(), "dialog");
     }
 
     @Override
-    public void onDismiss(int which, String text) {
-        if (which == DialogInterface.BUTTON_POSITIVE) {
+    public void onDismiss(int dialogCode, int whichButton, String text) {
+        if (dialogCode == DIALOG_START && whichButton == DialogInterface.BUTTON_POSITIVE) {
             query(text);
+        } else if (dialogCode == DIALOG_REACTIVE && whichButton == DialogInterface.BUTTON_POSITIVE) {
+            queryReactive(text);
         }
     }
 
@@ -68,5 +82,9 @@ public class MainActivity extends AppCompatActivity implements EditTextDialog.On
                 textView.append("\n\n" + error);
             }
         });
+    }
+
+    private void queryReactive(String zipCode) {
+        textView.setText("reactive zipCode = " + zipCode);
     }
 }

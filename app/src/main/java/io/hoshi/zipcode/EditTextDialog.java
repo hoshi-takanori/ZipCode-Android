@@ -14,14 +14,23 @@ import android.widget.EditText;
  */
 public class EditTextDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
+    private static String BUNDLE_DIALOG_CODE = "dialog_code";
     private static String BUNDLE_SAVED_TEXT = "saved_text";
 
     public interface OnDismissListener {
-        void onDismiss(int which, String text);
+        void onDismiss(int dialogCode, int whichButton, String text);
     }
 
     private OnDismissListener onDismissListener;
     private EditText editText;
+
+    public static EditTextDialog newInstance(int dialogCode) {
+        EditTextDialog dialog = new EditTextDialog();
+        Bundle args = new Bundle();
+        args.putInt(BUNDLE_DIALOG_CODE, dialogCode);
+        dialog.setArguments(args);
+        return dialog;
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -54,6 +63,7 @@ public class EditTextDialog extends DialogFragment implements DialogInterface.On
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        onDismissListener.onDismiss(which, editText.getText().toString());
+        int dialogCode = getArguments().getInt(BUNDLE_DIALOG_CODE);
+        onDismissListener.onDismiss(dialogCode, which, editText.getText().toString());
     }
 }
