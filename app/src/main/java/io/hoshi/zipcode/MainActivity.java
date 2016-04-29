@@ -35,26 +35,29 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String zipCode = "100-0001";
-                textView.setText("zipCode = " + zipCode);
+                query("100-0001");
+            }
+        });
+    }
 
-                Call<ZipCodeResult> call = api.zipCodeSearch(zipCode, ZipCodeAPI.OUTPUT_JSON, ZipCodeAPI.API_KEY);
-                call.enqueue(new Callback<ZipCodeResult>() {
-                    @Override
-                    public void onResponse(Call<ZipCodeResult> call, Response<ZipCodeResult> response) {
-                        ZipCodeResult result = response.body();
-                        textView.append("\n\nresult.resultInfo.count = " + result.resultInfo.count);
-                        for (int i = 0; i < result.feature.length; i++) {
-                            textView.append("\nresult.feature[" + i + "].property.address = " + result.feature[i].property.address);
-                            textView.append("\nresult.feature[" + i + "].geometry.coordinates = " + result.feature[i].geometry.coordinates);
-                        }
-                    }
+    private void query(String zipCode) {
+        textView.setText("zipCode = " + zipCode);
 
-                    @Override
-                    public void onFailure(Call<ZipCodeResult> call, Throwable error) {
-                        textView.append("\n\n" + error);
-                    }
-                });
+        Call<ZipCodeResult> call = api.zipCodeSearch(zipCode, ZipCodeAPI.OUTPUT_JSON, ZipCodeAPI.API_KEY);
+        call.enqueue(new Callback<ZipCodeResult>() {
+            @Override
+            public void onResponse(Call<ZipCodeResult> call, Response<ZipCodeResult> response) {
+                ZipCodeResult result = response.body();
+                textView.append("\n\nresult.resultInfo.count = " + result.resultInfo.count);
+                for (int i = 0; i < result.feature.length; i++) {
+                    textView.append("\nresult.feature[" + i + "].property.address = " + result.feature[i].property.address);
+                    textView.append("\nresult.feature[" + i + "].geometry.coordinates = " + result.feature[i].geometry.coordinates);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ZipCodeResult> call, Throwable error) {
+                textView.append("\n\n" + error);
             }
         });
     }
